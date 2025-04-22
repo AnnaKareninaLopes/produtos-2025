@@ -3,13 +3,17 @@ package edu.ifmg.produtos.services;
 import edu.ifmg.produtos.dtos.ProductDTO;
 import edu.ifmg.produtos.entities.Product;
 import edu.ifmg.produtos.repository.ProductRepository;
+import edu.ifmg.produtos.resources.ProductResource;
 import edu.ifmg.produtos.services.exceptions.DatabaseException;
 import edu.ifmg.produtos.services.exceptions.ResourceNotFound;
 import jakarta.persistence.EntityNotFoundException;
+import org.hibernate.sql.Update;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +29,10 @@ public class ProductService {
     public Page<ProductDTO> findAll(Pageable pageable) {
 
         Page<Product> list = productRepository.findAll(pageable);
-        return list.map(product -> new ProductDTO(product));
+        return list.map(product -> new ProductDTO(product)
+                .add(linkTo(methodOn(ProductResource.class).findAll(null)).withSelfRel())
+                .add(linkTo(methodOn(ProductResource.class).findById(product.getId())).withRel("Get a product"))
+        );
 
     }
 
@@ -34,7 +41,12 @@ public class ProductService {
 
         Optional<Product> obj = productRepository.findById(id);
         Product product = obj.orElseThrow(() -> new ResourceNotFound("Product not found" + id));
-        return new ProductDTO(product);
+        return new ProductDTO(product)
+//                .add(linkTo(methodOn(ProductResource.class)).withSelfRel())
+//                .add(linkTo(methodOn(ProductResource.class)).withRel("All products"))
+//                .add(linkTo(methodOn(ProductResource.class)).withRel("Update product"))
+//                .add(linkTo(methodOn(ProductResource.class)).withRel("Delete product"))
+                ;
 
     }
 
