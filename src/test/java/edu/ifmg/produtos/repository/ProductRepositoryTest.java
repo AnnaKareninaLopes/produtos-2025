@@ -1,6 +1,7 @@
 package edu.ifmg.produtos.repository;
 
 import edu.ifmg.produtos.entities.Product;
+import edu.ifmg.produtos.util.Factory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,15 +18,35 @@ class ProductRepositoryTest {
     @Autowired
     private ProductRepository productRepository;
 
+    private Long existingId;
+
+    @BeforeEach
+    void setUp() throws Exception {
+        existingId = 1L;
+    }
+
     @Test
     @DisplayName(value = "Verificando se o objeto não existe no" +
             "BD depois de deletado.")
     public void deleteShoudDeleteObjectWhenIdExists() {
 
-        productRepository.deleteById(1L);
-        Optional<Product> obj = productRepository.findById(1L);
+        productRepository.deleteById(existingId);
+        Optional<Product> obj = productRepository.findById(existingId);
 
         Assertions.assertFalse(obj.isPresent());
 
     }
+    @Test
+    @DisplayName(value = "Verificando o autoincrmento da chave primária.")
+    public void insertShouldPersistWithAutoIncrementIdWhenIdNull(){
+        Product product = Factory.createProduct();
+        product.setId(null);
+
+        Product p = productRepository.save(product);
+        Optional<Product> obj = productRepository.findById(p.getId());
+        Assertions.assertTrue(obj.isPresent());
+        Assertions.assertNotEquals(0, obj.get().getId());
+        Assertions.assertEquals(26, obj.get().getId());
+    }
+
 }
