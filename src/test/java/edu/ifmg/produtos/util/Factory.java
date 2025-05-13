@@ -13,7 +13,7 @@ public class Factory {
         product.setName("Iphone XXX");
         product.setPrice(5000.0);
         product.setImageUrl("http://img.com/iphonexxx.jpg");
-        product.getCategories().add(new Category("News", 60L));
+        product.getCategories().add(new Category("Livros", 1L));
 
         return product;
     }

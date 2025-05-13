@@ -29,6 +29,7 @@ public class Product {
             joinColumns = @JoinColumn(name = "product_id"), // Chave estrangeira para a tabela de produtos
             inverseJoinColumns = @JoinColumn(name = "category_id") // Chave estrangeira para a tabela de categorias
     )
+
     private Set<Category> categories = new HashSet<>();
 
     public Product() {
