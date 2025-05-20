@@ -3,6 +3,8 @@ package edu.ifmg.produtos.dtos;
 import edu.ifmg.produtos.entities.Category;
 import edu.ifmg.produtos.entities.Product;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.util.HashSet;
@@ -14,10 +16,12 @@ public class ProductDTO extends RepresentationModel<ProductDTO> {
     @Schema(description = "Database generated ID product")
     private Long id;
     @Schema(description = "Product name")
+    @Size(min = 3, max=255, message = "Deve ter entre 3 e 255 caracteres")
     private String name;
     @Schema(description = "A detail description of the product")
     private String description;
     @Schema(description = "Product price")
+    @Positive(message = "Preço deve ter valor positivo.")
     private Double price;
     @Schema(description = "Product image URL")
     private String imageUrl;

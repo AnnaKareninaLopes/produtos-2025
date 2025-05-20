@@ -12,6 +12,7 @@ import java.util.Set;
 public class UserDTO {
 
     private long id;
+    @NotBlank(message = "Campo obrigatório!")
     private String firstName;
     private String lastName;
 
