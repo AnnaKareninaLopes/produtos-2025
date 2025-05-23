@@ -7,6 +7,7 @@ import edu.ifmg.produtos.dtos.UserInsertDTO;
 import edu.ifmg.produtos.entities.Product;
 import edu.ifmg.produtos.entities.Role;
 import edu.ifmg.produtos.entities.User;
+import edu.ifmg.produtos.projections.UserDetailsProjection;
 import edu.ifmg.produtos.repository.RoleRepository;
 import edu.ifmg.produtos.repository.UserRepository;
 import edu.ifmg.produtos.resources.ProductResource;
@@ -20,14 +21,18 @@ import org.springframework.data.domain.Pageable;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 
     @Autowired
     private UserRepository repository;
@@ -90,7 +95,6 @@ public class UserService {
         }
     }
 
-
     private void copyDtoToEntity(UserDTO dto, User entity) {
         entity.setFirstName(dto.getFirstName());
         entity.setLastName(dto.getLastName());
@@ -101,5 +105,24 @@ public class UserService {
             Role roleEntity = roleRepository.getReferenceById(role.getId());
             entity.getRoles().add(roleEntity);
         }
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        List<UserDetailsProjection> result
+                = repository.searchUserAndRoleByEmail(username);
+
+        if(result.isEmpty()) {
+            throw new UsernameNotFoundException("Email not found");
+        }
+
+        User user = new User();
+        user.setEmail(result.get(0).getUsername());
+        user.setPassword(result.get(0).getPassword());
+        for (UserDetailsProjection p : result) {
+            user.addRole(new Role(p.getRoleId(), p.getAuthority()));
+        }
+
+        return user;
     }
 }
