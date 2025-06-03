@@ -1,6 +1,7 @@
 package edu.ifmg.produtos.services;
 
 import edu.ifmg.produtos.dtos.ProductDTO;
+import edu.ifmg.produtos.dtos.ProductListDTO;
 import edu.ifmg.produtos.entities.Product;
 import edu.ifmg.produtos.repository.ProductRepository;
 import edu.ifmg.produtos.resources.ProductResource;
@@ -34,6 +35,10 @@ public class ProductService {
                 .add(linkTo(methodOn(ProductResource.class).findById(product.getId())).withRel("Get a product"))
         );
 
+    }
+
+    public Page<ProductListDTO> findAllPaged (String name, String categoryId, Pageable pageable) {
+        return null;
     }
 
     @Transactional(readOnly = true)

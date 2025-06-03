@@ -4,6 +4,7 @@ package edu.ifmg.produtos.resources;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.ifmg.produtos.dtos.ProductDTO;
 import edu.ifmg.produtos.util.Factory;
+import edu.ifmg.produtos.util.TokenUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,14 +34,24 @@ public class ProductResourceIT {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private TokenUtil tokenUtil;
+    private String username;
+    private String password;
+    private String token;
+
     private Long existingId;
     private Long nonExistingId;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() throws Exception {
 
         existingId = 1L;
         nonExistingId = 2000L;
+
+        username = "maria@gmail.com";
+        password = "123456";
+        token = tokenUtil.obtainAccessToken(mockMvc, username, password);
 
     }
 
@@ -71,9 +82,10 @@ public class ProductResourceIT {
 
         ResultActions result = mockMvc.perform(
                 put("/product/{id}", existingId)
-                        .content(dtoJson)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
+                    .header("Authorization", "Bearer " + token)
+                    .content(dtoJson)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON)
         );
 
         result.andExpect(status().isOk());
@@ -91,9 +103,10 @@ public class ProductResourceIT {
 
         ResultActions result = mockMvc.perform(
                 put("/product/{id}", nonExistingId)
-                        .content(dtoJson)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
+                    .header("Authorization", "Bearer " + token)
+                    .content(dtoJson)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON)
         );
 
         result.andExpect(status().isNotFound());
@@ -111,6 +124,7 @@ public class ProductResourceIT {
 
         ResultActions result = mockMvc.perform(
                 post("/product")
+                        .header("Authorization", "Bearer " + token)
                         .content(dtoJson)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -127,7 +141,9 @@ public class ProductResourceIT {
 
         ResultActions result = mockMvc.perform(
                 delete("/product/{id}", existingId)
-                        .accept(MediaType.APPLICATION_JSON)
+                    .header("Authorization", "Bearer " + token)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON)
         );
 
         result.andExpect(status().isNoContent());
@@ -139,7 +155,9 @@ public class ProductResourceIT {
 
         ResultActions result = mockMvc.perform(
                 delete("/product/{id}", nonExistingId)
-                        .accept(MediaType.APPLICATION_JSON)
+                    .header("Authorization", "Bearer " + token)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON)
         );
 
         result.andExpect(status().isNotFound());
