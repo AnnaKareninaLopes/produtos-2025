@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -26,8 +27,8 @@ public class ProductResource {
 
     @GetMapping(produces = "application/json")
     @Operation(
-            description = "Create a new product",
-            summary = "Create a new product",
+            description = "Get all product",
+            summary = "Get all product",
             responses = {
                     @ApiResponse(responseCode = "200", description = "OK"),
             }
@@ -39,8 +40,8 @@ public class ProductResource {
 
     @GetMapping(value = "/{id}", produces = "application/json")
     @Operation(
-            description = "Create a new product",
-            summary = "Create a new product",
+            description = "Get a product",
+            summary = "Get a product",
             responses = {
                     @ApiResponse(responseCode = "200", description = "OK"),
                     @ApiResponse(responseCode = "404", description = "Not Found"),
@@ -52,6 +53,7 @@ public class ProductResource {
     }
 
     @PostMapping(produces = "application/json")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_OPERATOR')")
     @Operation(
             description = "Create a new product",
             summary = "Create a new product",
@@ -70,9 +72,10 @@ public class ProductResource {
     }
 
     @PutMapping(value = "/{id}", produces = "application/json")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_OPERATOR')")
     @Operation(
-            description = "Create a new product",
-            summary = "Create a new product",
+            description = "Update a product",
+            summary = "Update a product",
             responses = {
                     @ApiResponse(responseCode = "200", description = "OK"),
                     @ApiResponse(responseCode = "400", description = "Bad Request"),
@@ -87,9 +90,10 @@ public class ProductResource {
     }
 
     @DeleteMapping(value = "/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_OPERATOR')")
     @Operation(
-            description = "Create a new product",
-            summary = "Create a new product",
+            description = "Delete product",
+            summary = "Delete product",
             responses = {
                     @ApiResponse(responseCode = "200", description = "OK"),
                     @ApiResponse(responseCode = "400", description = "Bad Request"),
