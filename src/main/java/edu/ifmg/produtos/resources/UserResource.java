@@ -77,6 +77,25 @@ public class UserResource {
         return ResponseEntity.created(uri).body(user);
     }
 
+    @PostMapping(value = "/signup", produces = "application/json")
+    @Operation(
+            description = "Sign up",
+            summary = "You can sign up",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Product created"),
+                    @ApiResponse(responseCode = "400", description = "Bad Request"),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
+                    @ApiResponse(responseCode = "403", description = "Forbidden"),
+            }
+    )
+
+    public ResponseEntity<UserDTO> signup(@RequestBody UserInsertDTO dto) {
+        UserDTO user = userService.signup(dto);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}").buildAndExpand(user.getId()).toUri();
+        return ResponseEntity.created(uri).body(user);
+    }
+
     @PutMapping(value = "/{id}", produces = "application/json")
     @Operation(
             description = "Create a new product",

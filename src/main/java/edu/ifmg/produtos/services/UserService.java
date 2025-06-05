@@ -8,6 +8,7 @@ import edu.ifmg.produtos.entities.Product;
 import edu.ifmg.produtos.entities.Role;
 import edu.ifmg.produtos.entities.User;
 import edu.ifmg.produtos.projections.UserDetailsProjection;
+import edu.ifmg.produtos.repository.CategoryRepository;
 import edu.ifmg.produtos.repository.RoleRepository;
 import edu.ifmg.produtos.repository.UserRepository;
 import edu.ifmg.produtos.resources.ProductResource;
@@ -42,6 +43,8 @@ public class UserService implements UserDetailsService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     @Transactional(readOnly = true)
     public Page<UserDTO> findAll(Pageable pageable) {
@@ -124,5 +127,20 @@ public class UserService implements UserDetailsService {
         }
 
         return user;
+    }
+
+    public UserDTO signup(UserInsertDTO dto) {
+
+        User user = new User();
+        copyDtoToEntity(dto, user);
+
+        Role role = roleRepository.findByAuthority("ROLE_OPERATOR");
+
+        user.getRoles().clear();
+        user.getRoles().add(role);
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user = repository.save(user);
+        return new UserDTO(user);
+
     }
 }
