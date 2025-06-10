@@ -137,7 +137,7 @@ public class UserService implements UserDetailsService {
         Role role = roleRepository.findByAuthority("ROLE_OPERATOR");
 
         user.getRoles().clear();
-        user.getRoles().add(role);
+        user.getRoles().add(role); //inserimos o perfil de operador
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
         user = repository.save(user);
         return new UserDTO(user);

@@ -1,8 +1,10 @@
 package edu.ifmg.produtos.resources.exceptions;
 
 import edu.ifmg.produtos.services.exceptions.DatabaseException;
+import edu.ifmg.produtos.services.exceptions.EmailException;
 import edu.ifmg.produtos.services.exceptions.ResourceNotFound;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.Email;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -58,6 +60,21 @@ public class ResourceExceptionListerner {
         for (FieldError f : e.getBindingResult().getFieldErrors()){
             error.addFieldError(f.getField(), f.getDefaultMessage());
         }
+        return ResponseEntity.status(status).body(error);
+    }
+
+    @ExceptionHandler(EmailException.class)
+    public ResponseEntity<StandartError> emailException(EmailException e, HttpServletRequest request) {
+
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+
+        StandartError error = new StandartError();
+        error.setStatus(status.value());
+        error.setMessage(e.getMessage());
+        error.setError("Email error");
+        error.setTimestamp(Instant.now());
+        error.setPath(request.getRequestURI());
+
         return ResponseEntity.status(status).body(error);
     }
 
